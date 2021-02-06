@@ -1,0 +1,56 @@
+CREATE DATABASE database_npng;
+
+USE database_npng;
+
+/**
+  * OJO! EN VEZ DE QUE LA SEDE MANEJE LA RELACIÓN,
+  * QUE LO HAGA LA CIUDAD Y EL USUARIO
+*/
+
+--TABLA USUARIO
+CREATE TABLE users (
+  id INT(11) NOT NULL,
+  username VARCHAR(16) NOT NULL,
+  password VARCHAR(60) NOT NULL
+);
+
+ALTER TABLE users
+  ADD PRIMARY KEY (id);
+
+ALTER TABLE users
+  MODIFY username VARCHAR(255);
+
+ALTER TABLE users
+  MODIFY id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 1;
+
+DESCRIBE users;
+
+--TABLA CIUDAD
+CREATE TABLE ciudad (
+  id INT(11) NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  user_id INT(11),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+ALTER TABLE ciudad
+  ADD PRIMARY KEY (id);
+
+ALTER TABLE ciudad
+  MODIFY id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 1;
+
+--TABLA SEDE
+CREATE TABLE sede (
+  id INT(11) NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  user_id INT(11),
+  ciudad_id INT(11),
+  CONSTRAINT fk_user_sede FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_ciudad_sede FOREIGN KEY (ciudad_id) REFERENCES ciudad(id)
+);
+
+ALTER TABLE sede
+  ADD PRIMARY KEY (id);
+
+ALTER TABLE sede
+  MODIFY id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 1;
