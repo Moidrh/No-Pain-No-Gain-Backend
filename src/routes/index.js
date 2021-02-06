@@ -1,14 +1,17 @@
 /**
- * Ruta: /api/usuarios
+ * Ruta: /api/home
  */
 
 const {Router} = require('express');
-const { getUsuarios, createUsuarios } = require('../controllers/usuarios');
+const {isLoggedIn} =require('../lib/auth');
 
 const router = Router();
 
-router.get('/', getUsuarios);
-
-router.post('/', createUsuarios);
+router.get('/', isLoggedIn, (req, res) => {
+  res.json({
+    ok: true,
+    msg: 'home'
+  });
+});
 
 module.exports = router;
