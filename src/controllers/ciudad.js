@@ -20,7 +20,7 @@ const getAllCiudades = async (req, res) => {
 
   const ciudades = await pool.query ('SELECT * FROM ciudad');
 
-  console.log(ciudades);
+  // console.log(ciudades);
 
   res.json({
     ok: true,
@@ -32,11 +32,11 @@ const createCiudades = async (req, res) => {
 
   const {name, user_id} = req.body;
 
-  console.log(name);
+  // console.log(name);
 
   const exist = await validateCiudad(name);
 
-  console.log("EXIST: ", exist);
+  // console.log("EXIST: ", exist);
 
   if(!exist) {
     const newCiudad = {
@@ -48,12 +48,12 @@ const createCiudades = async (req, res) => {
   
     res.json({
       ok: true,
-      msg: 'Creando Ciudad'
+      msg: newCiudad
     });
   } else {
     res.json({
       ok: false,
-      msg: 'Ciudad ya creado'
+      msg: 'Ciudad ya creada'
     });
   }
 

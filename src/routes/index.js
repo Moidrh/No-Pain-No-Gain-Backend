@@ -3,11 +3,12 @@
  */
 
 const {Router} = require('express');
-const {isLoggedIn} =require('../lib/auth');
+const { validarJWT } = require('../middlewares/validar-jwt');
 
 const router = Router();
 
-router.get('/', isLoggedIn, (req, res) => {
+router.get('/', [validarJWT], (req, res) => {
+  console.log('HOME')
   res.json({
     ok: true,
     msg: 'home'

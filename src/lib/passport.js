@@ -9,13 +9,18 @@ passport.use('local.signin', new Strategy({
   passReqToCallback : true
 }, async (req, username, password, done) => {
 
+  console.log('ENTRANDOOOO')
+
   const rows = await pool.query('select * from users where username = ?', [username]);
   
   if(rows.length > 0) {
     const user = rows[0];
     const validPassword = await helpers.matchPassword(password, user.password);
 
+    console.log('validPassword: ', validPassword)
+
     if(validPassword) {
+      console.log('EXITOSO')
       done(null, user, req.flash('success','Bienvenido a No Pain No Gain ' + user.username));
     } else {
       done(null, false, req.flash('message','Contraseña incorrecta'));
@@ -37,6 +42,8 @@ passport.use('local.signup', new Strategy({
     password
   };
 
+  console.log("USERNAME ", username);
+
   newUser.password = await helpers.encryptPassword(password);
   // VALIDAR SI EL USUARIO EXISTE
   const rows = await pool.query('select * from users where username = ?', [username]);
@@ -53,8 +60,8 @@ passport.use('local.signup', new Strategy({
 
 }));
 
-passport.serializeUser((usr, done)=> {
-  done(null, usr.id);
+passport.serializeUser((user, done)=> {
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done)=>{

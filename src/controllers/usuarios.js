@@ -1,4 +1,7 @@
 const pool = require("../database");
+const {response} = require('express');
+const bcrypt = require('bcryptjs');
+const {generarJWT} = require('../helpers/jwt');
 
 const validateUsuario = async (username) => {
 
@@ -30,49 +33,62 @@ const getAllUsuarios = async (req, res) => {
 
 const getUsuario = async (req, res) => {
 
-  const {id} = req.body;
+  const {username} = req.body;
 
-  console.log(' ID: ', id);
+  console.log(' ID: ', username);
 
-  const usuarios = await pool.query ('SELECT * FROM users WHERE id = ?', [id]);
+  const usuarios = await pool.query ('SELECT * FROM users WHERE username = ?', [username]);
 
   console.log(usuarios);
 
   res.json({
     ok: true,
-    usuarios: usuarios
+    usuarios: usuarios,
   });
 }
 
-const createUsuarios = async (req, res) => {
+const createUsuarios = async (req, res = response) => {
 
   const {username, password} = req.body;
 
   console.log(username);
-
-  const exist = await validateUsuario(username);
-
-  console.log("EXIST: ", exist);
-
-  if(!exist) {
-    const newUser = {
-      username,
-      password
-    };
   
-    await pool.query ('INSERT INTO users set ?', [newUser]);
+  try {
+    const exist = await validateUsuario(username);
   
-    res.json({
-      ok: true,
-      msg: 'Creando Usuario'
-    });
-  } else {
-    res.json({
+    if(!exist) {
+
+      const newUser = {
+        username,
+        password
+      };
+    
+      const salt = bcrypt.genSaltSync();
+
+      newUser.password = bcrypt.hashSync(password, salt);
+
+      await pool.query ('INSERT INTO users set ?', [newUser]);
+
+      const token = await generarJWT(username);
+    
+      res.json({
+        ok: true,
+        usuario: newUser,
+        token
+      });
+    } else {
+      return res.status(400).json({
+        ok: false,
+        msg: 'El correo ya está registrado'
+      });
+    }
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({
       ok: false,
-      msg: 'Usuario ya creado'
-    });
+      msg: 'Error inesperado'
+    })
   }
-
   
 }
 

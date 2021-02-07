@@ -5,6 +5,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const morgan = require('morgan');
+const validator = require('express-validator');
 const passport = require('passport');
 const flash = require('connect-flash');
 const MySQLStore = require('express-mysql-session')(session);
@@ -17,7 +18,10 @@ const app = express();
 require('./lib/passport');
 
 //CORS
-app.use(cors());
+app.use(cors({
+    origin:['http://localhost:4200','http://127.0.0.1:4200'],
+    optionsSuccessStatus: 200
+  }));
 
 app.use(session({
   secret: 'pruebacolpatria',
