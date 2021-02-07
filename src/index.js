@@ -15,7 +15,6 @@ const {database} = require('./keys');
 
 //Servidor express
 const app = express();
-require('./lib/passport');
 
 //CORS
 app.use(cors({
@@ -23,24 +22,10 @@ app.use(cors({
     optionsSuccessStatus: 200
   }));
 
-app.use(session({
-  secret: 'pruebacolpatria',
-  resave: false,
-  saveUninitialized: false,
-  store: new MySQLStore(database)
-}));
-app.use(flash());
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use((req, res, next) => {
-  app.locals.success = req.flash('success');
-  app.locals.success = req.flash('message');
-  app.locals.user = req.user;
-  next();
-});
 
 //Lectura y parseo del body
 app.use(express.json());

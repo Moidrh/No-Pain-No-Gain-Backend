@@ -30,9 +30,9 @@ const getAllSedes = async (req, res) => {
 
 const getSede = async (req, res) => {
 
-  const {id} = req.body;
+  const {name} = req.body;
 
-  const sedes = await pool.query ('SELECT u.username FROM sede s inner join ciudad c on c.id = s.ciudad_id inner join users u on u.id = s.user_id where s.id = ?', [id]);
+  const sedes = await pool.query ('SELECT u.username FROM sede s inner join ciudad c on c.id = s.ciudad_id inner join users u on u.id = s.user_id where s.name = ?', [name]);
 
   console.log(sedes);
 

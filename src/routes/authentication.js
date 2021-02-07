@@ -7,7 +7,6 @@ const express = require('express');
 const {Router} = require('express');
 const passport = require('passport');
 const pool = require('../database');
-const {isLoggedIn} =require('../lib/auth');
 
 const { login } = require('../controllers/authentication');
 const { check } = require('express-validator');
