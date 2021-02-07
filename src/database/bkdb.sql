@@ -10,23 +10,18 @@ USE database_npng;
 --TABLA USUARIO
 CREATE TABLE users (
   id INT(11) NOT NULL,
-  username VARCHAR(255) NOT NULL,
-  password VARCHAR(60) NOT NULL,
-  privilege VARCHAR(6) NOT NULL,
-  sede_id INT(11),
-  ciudad_id INT(11),
-  CONSTRAINT fk_sede_user FOREIGN KEY (sede_id) REFERENCES sede(id),
-  CONSTRAINT fk_ciudad_user FOREIGN KEY (ciudad_id) REFERENCES ciudad(id)
+  username VARCHAR(16) NOT NULL,
+  password VARCHAR(60) NOT NULL
 );
 
 ALTER TABLE users
   ADD PRIMARY KEY (id);
 
 ALTER TABLE users
-  MODIFY id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 1;
+  MODIFY username VARCHAR(255);
 
 ALTER TABLE users
-  ADD COLUMN privilege VARCHAR(6) after password;
+  MODIFY id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 1;
 
 DESCRIBE users;
 
@@ -34,8 +29,8 @@ DESCRIBE users;
 CREATE TABLE ciudad (
   id INT(11) NOT NULL,
   name VARCHAR(150) NOT NULL,
-  sede_id INT(11),
-  CONSTRAINT fk_sede_ciudad FOREIGN KEY (sede_id) REFERENCES sede(id)
+  user_id INT(11),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 ALTER TABLE ciudad
@@ -48,7 +43,9 @@ ALTER TABLE ciudad
 CREATE TABLE sede (
   id INT(11) NOT NULL,
   name VARCHAR(150) NOT NULL,
+  user_id INT(11),
   ciudad_id INT(11),
+  CONSTRAINT fk_user_sede FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_ciudad_sede FOREIGN KEY (ciudad_id) REFERENCES ciudad(id)
 );
 

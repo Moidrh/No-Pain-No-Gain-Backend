@@ -4,7 +4,7 @@ const {check} = require('express-validator');
 const { validarCampo } = require('../middlewares/validar-campos');
 
 const {Router} = require('express');
-const { getAllSedes, createSede, getSede } = require('../controllers/sede');
+const { getAllSedes, createSede, getUserBySede, getSedeByCiudad } = require('../controllers/sede');
 
 const pool = require('../database');
 
@@ -12,8 +12,10 @@ const router = Router();
 
 router.get('/search', [validarJWT], getAllSedes);
 
-router.post('/add', [validarJWT, check('name').not().isEmpty(), check('user_id').not().isEmpty(), check('ciudad_id').not().isEmpty(), validarCampo], createSede);
+router.post('/add', [validarJWT, check('name').not().isEmpty(), validarCampo], createSede);
 
-router.get('/search/user', [validarJWT, check('name').not().isEmpty(), validarCampo], getSede);
+router.get('/search/:sede', validarJWT, getUserBySede);
+
+router.get('/search/ciudad/:ciudad', validarJWT, getSedeByCiudad);
 
 module.exports = router;

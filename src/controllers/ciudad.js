@@ -24,24 +24,45 @@ const getAllCiudades = async (req, res) => {
 
   res.json({
     ok: true,
-    Ciudades: ciudades
+    resultados: ciudades
+  });
+}
+
+const getUsuariosByCiudad = async (req, res) => {
+
+  const name = req.params.ciudad;
+
+  const usernames = await pool.query ('select u.* from users u inner join ciudad c on c.id = u.ciudad_id where c.name = ?;  ', [name]);
+
+  console.log(usernames);
+
+  res.json({
+    ok: true,
+    resultados: usernames
   });
 }
 
 const createCiudades = async (req, res) => {
 
-  const {name, user_id} = req.body;
+  const {nameCiudad, nameSede} = req.body;
 
   // console.log(name);
 
-  const exist = await validateCiudad(name);
+  const exist = await validateCiudad(nameCiudad);
 
-  // console.log("EXIST: ", exist);
+  console.log("EXIST: ", exist);
 
   if(!exist) {
+
+    const idSedeAux = await pool.query('select id from sede where name = ?', [nameSede]);
+
+    const idSede = idSedeAux[0]['id'];
+
+    console.log('ID SEDE: ', idSede)
+
     const newCiudad = {
-      name,
-      user_id    
+      name: nameCiudad,
+      sede_id: idSede    
     };
   
     await pool.query ('INSERT INTO ciudad set ?', [newCiudad]);
@@ -62,5 +83,6 @@ const createCiudades = async (req, res) => {
 
 module.exports = {
   getAllCiudades,
-  createCiudades
+  createCiudades,
+  getUsuariosByCiudad
 }

@@ -14,6 +14,15 @@ const login = async (req, res = response) => {
 
     const encryptedPassword = rows[0]['password'];
 
+    const privilege = rows[0]['privilege'];
+
+    if(privilege === 'NORMAL') {
+      return res.status(400).json({
+        ok:false,
+        msg: 'No tienes suficientes credenciales'
+      });
+    }
+
     if( rows.length == 0) {
       return res.status(404).json({
         ok: false,
@@ -45,10 +54,6 @@ const login = async (req, res = response) => {
     });
   }
   
-}
-
-const home = async (req, res) => {
-  console.log('HOME');
 }
 
 module.exports = {

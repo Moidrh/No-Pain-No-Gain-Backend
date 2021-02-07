@@ -27,13 +27,13 @@ const getAllUsuarios = async (req, res) => {
 
   res.json({
     ok: true,
-    usuarios: usuarios
+    resultados: usuarios
   });
 }
 
 const getUsuario = async (req, res) => {
 
-  const {username} = req.body;
+  const username = req.params.username;
 
   console.log(' ID: ', username);
 
@@ -43,11 +43,71 @@ const getUsuario = async (req, res) => {
 
   res.json({
     ok: true,
-    usuarios: usuarios,
+    resultados: usuarios,
   });
 }
 
 const createUsuarios = async (req, res = response) => {
+
+  const {username, password, nameSede, nameCiudad} = req.body;
+
+  console.log(username);
+  
+  try {
+    const exist = await validateUsuario(username);
+
+    const idSedeAux = await pool.query('select id from sede where name = ?', [nameSede])
+      
+    console.log('idSEDEAUX ', idSedeAux);
+
+    const idCiudadAux = await pool.query('select id from ciudad where name = ?', [nameCiudad]);
+
+    console.log('IDCIUDADAUX ', idCiudadAux);
+
+    const idSede = idSedeAux[0]['id'];
+
+    const idCiudad = idCiudadAux[0]['id'];
+  
+    if(!exist && idSede != null && idCiudad != null) {
+
+      const newUser = {
+        username,
+        password,
+        privilege: 'NORMAL',
+        sede_id: idSede,
+        ciudad_id: idCiudad
+      };
+    
+      const salt = bcrypt.genSaltSync();
+
+      newUser.password = bcrypt.hashSync(password, salt);
+
+      await pool.query ('INSERT INTO users set ?', [newUser]);
+
+      const token = await generarJWT(username);
+    
+      res.json({
+        ok: true,
+        usuario: newUser,
+        token
+      });
+    } else {
+      return res.status(400).json({
+        ok: false,
+        msg: 'El correo ya está registrado'
+      });
+    }
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error inesperado'
+    })
+  }
+  
+}
+
+const createUsuariosAdmin = async (req, res = response) => {
 
   const {username, password} = req.body;
 
@@ -60,7 +120,8 @@ const createUsuarios = async (req, res = response) => {
 
       const newUser = {
         username,
-        password
+        password,
+        privilege: 'ADMIN'
       };
     
       const salt = bcrypt.genSaltSync();
@@ -94,6 +155,7 @@ const createUsuarios = async (req, res = response) => {
 
 module.exports = {
   getAllUsuarios,
+  createUsuariosAdmin,
   createUsuarios,
   getUsuario
 }
